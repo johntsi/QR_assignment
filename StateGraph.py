@@ -44,7 +44,7 @@ class StateGraph(object):
 			return Y_reduced
 
 		def new_magnitudes(Y):
-		# produces new magnitudes for quantities Volume and Outlfow
+		# produces new magnitudes for quantities Volume and Outflow
 		# based on their past magnitudes and their derivatives
 
 			# combinations of [M, d] that the derivative does not affect the magnitude
@@ -72,10 +72,10 @@ class StateGraph(object):
 						# fill half the branches with 0 and the other half with +
 						for y in Y[:n]:
 							y[Q][0] = "0"
-							y["trace"] += "{}: We asume that the negative derivative is strong enough, the magnitude decreases to 0. \n".format(q)
+							y["trace"] += "{}: We assume that the negative derivative is strong enough, the magnitude decreases to 0. \n".format(q)
 						for y in Y[n:]:
 							y[Q][0] = "+"
-							y["trace"] += "{}: We asume that the negative derivative is not strong enough, the magnitude does not change. \n".format(q)
+							y["trace"] += "{}: We assume that the negative derivative is not strong enough, the magnitude does not change. \n".format(q)
 					
 					# might result max or remain +
 					elif x[Q] == ["+", "+"]:
@@ -90,16 +90,16 @@ class StateGraph(object):
 						# fill half the branches with + and the other half with max
 						for y in Y[:n]:
 							y[Q][0] = "+"
-							y["trace"] += "{}: We asume that the positive derivative is not strong enough, the magnitude does not change. \n".format(q)
+							y["trace"] += "{}: We assume that the positive derivative is not strong enough, the magnitude does not change. \n".format(q)
 						for y in Y[n:]:
 							y[Q][0] = "max"
-							y["trace"] += "{}: We asume that the positive derivative is strong enough, the magnitude increaes to max. \n".format(q)
+							y["trace"] += "{}: We assume that the positive derivative is strong enough, the magnitude increases to max. \n".format(q)
 					
 					# results in +
 					elif x[Q] == ["0", "+"]:
 						for y in Y:
 							y[Q][0] = "+"
-							y["trace"] += "{}: The positive derivative increaes the magnitude from 0 to +. \n".format(q)
+							y["trace"] += "{}: The positive derivative increases the magnitude from 0 to +. \n".format(q)
 				
 				# current derivative does not affect current magnitude
 				# just copy the previous magnitude
@@ -115,10 +115,11 @@ class StateGraph(object):
 			Y_new = []
 
 			for y in deepcopy(Y):
+
 				if (y["V"][0] == "max") and (y["O"][0] == "+"):
 
 					y["O"][0] = "max"
-					y["trace"] += "VC: Magnitude of Outlfow becomes max. \n"
+					y["trace"] += "VC: Magnitude of Outflow becomes max. \n"
 					Y_new.append(y)
 
 				elif (y["V"][0] == "+") and (y["O"][0] == "max"):
@@ -134,11 +135,11 @@ class StateGraph(object):
 
 					y_copy1["V"][0] = "0"
 					y_copy1["O"][0] = "0"
-					y_copy1["trace"] += "VC: 0 and max conflict. We asume that both become 0. \n"
+					y_copy1["trace"] += "VC: 0 and max conflict. We assume that both become 0. \n"
 
 					y_copy2["V"][0] = "max"
 					y_copy2["O"][0] = "max"
-					y_copy2["trace"] += "VC: 0 and max conflict. We asume that both become max. \n"
+					y_copy2["trace"] += "VC: 0 and max conflict. We assume that both become max. \n"
 
 					Y_new.append(y_copy1)
 					Y_new.append(y_copy2)
@@ -169,19 +170,19 @@ class StateGraph(object):
 					
 					# derivative of Inflow is greater
 					y_copy1["V"][1] = "+"
-					y_copy1["trace"] += "Volume: Conflict between positive magnitude of Inflow and positive magnitude of Outflow. We asume that the influence of Inflow is stronger. Derivative of Volume becomes +. \n"
+					y_copy1["trace"] += "Volume: Conflict between positive magnitude of Inflow and positive magnitude of Outflow. We assume that the influence of Inflow is stronger. Derivative of Volume becomes +. \n"
 
 					# derivative of Outflow is greater
 					y_copy2["V"][1] = "-"
-					y_copy1["trace"] += "Volume: Conflict between positive magnitude of Inflow and positive magnitude of Outflow. We asume that the influence of Outflow is stronger. Derivative of Volume becomes -. \n"
+					y_copy1["trace"] += "Volume: Conflict between positive magnitude of Inflow and positive magnitude of Outflow. We assume that the influence of Outflow is stronger. Derivative of Volume becomes -. \n"
 					
 					# derivatives are equal
 					y_copy3["V"][1] = "0"
 					
-					y_copy1["trace"] += "Volume: Conflict between positive magnitude of Inflow and positive magnitude of Outflow. We asume that the influence of Inflow is equal to that of the Outlfow. Derivative of Volume becomes 0. \n"
+					y_copy1["trace"] += "Volume: Conflict between positive magnitude of Inflow and positive magnitude of Outflow. We assume that the influence of Inflow is equal to that of the Outflow. Derivative of Volume becomes 0. \n"
 					new_Y = new_Y + [y_copy1, y_copy2, y_copy3]
 				
-				# Inflow positive and Outlfow 0
+				# Inflow positive and Outflow 0
 				# results in Volume +
 				elif (y["I"][0] == "+") and (y["O"][0] == "0"):
 					y["V"][1] = "+"
@@ -193,7 +194,7 @@ class StateGraph(object):
 				elif (y["I"][0] == "0") and (y["O"][0] != "0"):
 					y["V"][1] = "-"
 					new_Y.append(y)
-					y["trace"] += "Volume: Derivative becomes negative due to the magnitude of Outlfow being larger than that of the Inflow. \n"
+					y["trace"] += "Volume: Derivative becomes negative due to the magnitude of Outflow being larger than that of the Inflow. \n"
 
 				# both quantities 0
 				# result in Volume 0
@@ -230,14 +231,14 @@ class StateGraph(object):
 		# if inflow is cyclical, restart process after last index
 		# if inflow is not cyclical, last index will remain the same
 		next_index = self.inflow.index(x["I"]) + 1
-		Y[0]["trace"]= "I: Chaged exogenously, the next state is state {} in the defined transitions. \n".format(next_index)
+		Y[0]["trace"]= "Inflow: Changed exogenously, the next state is state {} in the defined transitions. \n".format(next_index)
 		if next_index == len(self.inflow):
 			if self.cycle:
 				next_index = 0
-				Y[0]["trace"] = "I: Changed exogenously, the next state is state {} in the defined transitions. \n".format(next_index)
+				Y[0]["trace"] = "Inflow: Changed exogenously, the next state is state {} in the defined transitions. \n".format(next_index)
 			else:
 				next_index -= 1
-				Y[0]["trace"] = "I: Remains the same, this is the last state in its defined transitions. \n"
+				Y[0]["trace"] = "Inflow: Remains the same, this is the last state in its defined transitions. \n"
 		Y[0]["I"] = self.inflow[next_index]
 		
 		# produce new magnitudes for previous magnitudes and derivatives
@@ -316,17 +317,19 @@ class StateGraph(object):
 	def createStateGraph(self):
 		# visualize graph from states and connections
 
+		fontsize = "22"
+
 		# graph object
 		sg = Digraph()
 
 		# add start node
-		sg.node("000", "start \n")
+		sg.node("000", "START \n", fontsize = fontsize, color = "blue", style='filled')
 
 		for i,state in enumerate(self.states):
 			state_text = str(i)+"\n"
 			for quantity,value in state.items():
 				state_text += str(quantity)+str(value)+"\n"
-			sg.node(str(i),state_text)
+			sg.node(str(i),state_text, fontsize = fontsize)
 
 		# add connections to start
 		for start_state in self.start_states:

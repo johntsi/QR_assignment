@@ -14,7 +14,7 @@ cycle = True
 output = True
 
 # specify start and end states for generating the trace
-start_state, end_state = 10, 19
+start_state, end_state = 2, 23
 
 # Create connections dictionary
 state_graph = StateGraph(Inflow, cycle)
